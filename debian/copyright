@@ -1,0 +1,12 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: python-opentelemetry-test-utils
+Upstream-Contact: https://opentelemetry.io/
+Source: https://github.com/open-telemetry/opentelemetry-python/tree/main/opentelemetry-test-utils
+
+Files: *
+Copyright: Copyright The OpenTelemetry Authors
+License: Apache 2
+
+Files: debian/*
+Copyright: 2022 Pexip AS <packaging@pexip.com>
+License: Apache 2

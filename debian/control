@@ -1,0 +1,21 @@
+Source: python-opentelemetry-test-utils
+Section: python
+Priority: optional
+Maintainer: Pexip AS <packaging@pexip.com>
+Build-Depends: debhelper-compat (= 13), dh-python, python3-setuptools, python3-all
+Standards-Version: 4.5.1
+Homepage: https://github.com/open-telemetry/opentelemetry-python/tests/opentelemetry-test-utils
+Rules-Requires-Root: no
+Vcs-Browser: https://github.com/pexip/os-python-opentelemetry-test-utils
+Vcs-Git: https://github.com/pexip/os-python-opentelemetry-test-utils.git
+
+Package: python3-opentelemetry-test-utils
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}
+Description: Open Telemetry test utilities
+ OpenTelemetry is a collection of tools, APIs, and SDKs. Use it to instrument,
+ generate, collect, and export telemetry data (metrics, logs, and traces) to
+ help you analyze your software’s performance and behavior.
+ .
+ This package installs test utilities for Python 3.
+
