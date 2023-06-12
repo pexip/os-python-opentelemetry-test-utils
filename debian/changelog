@@ -1,3 +1,9 @@
+python-opentelemetry-test-utils (0.39b0-0pexip1) pexip; urgency=medium
+
+  * New upstream release
+
+ -- Huw Jones <huw@pexip.com>  Mon, 12 Jun 2023 15:37:24 +0100
+
 python-opentelemetry-test-utils (0.33b0-0pexip1) pexip-bullseye; urgency=medium
 
   * Prepare Pexip Packaging
