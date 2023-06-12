@@ -3,6 +3,8 @@ python-opentelemetry-test-utils (0.39b0-0pexip1) pexip; urgency=medium
   * New upstream release
   * Fix copyright
   * Fix build
+  * Remove assertEqualSpanInstrumentationInfo as instrumentation_info is
+    removed (deprecated)
 
  -- Huw Jones <huw@pexip.com>  Mon, 12 Jun 2023 15:37:24 +0100
 
