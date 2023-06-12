@@ -5,8 +5,8 @@ Source: https://github.com/open-telemetry/opentelemetry-python/tree/main/opentel
 
 Files: *
 Copyright: Copyright The OpenTelemetry Authors
-License: Apache 2
+License: Apache-2
 
 Files: debian/*
 Copyright: 2022 Pexip AS <packaging@pexip.com>
-License: Apache 2
+License: Apache-2
