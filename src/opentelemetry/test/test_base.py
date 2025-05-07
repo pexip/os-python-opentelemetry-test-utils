@@ -70,9 +70,11 @@ class TestBase(unittest.TestCase):
             self, self.memory_exporter.get_finished_spans()
         )
 
-    def assertEqualSpanInstrumentationInfo(self, span, module):
-        self.assertEqual(span.instrumentation_info.name, module.__name__)
-        self.assertEqual(span.instrumentation_info.version, module.__version__)
+    def assertEqualSpanInstrumentationScope(self, span, module):
+        self.assertEqual(span.instrumentation_scope.name, module.__name__)
+        self.assertEqual(
+            span.instrumentation_scope.version, module.__version__
+        )
 
     def assertSpanHasAttributes(self, span, attributes):
         for key, val in attributes.items():
@@ -138,8 +140,9 @@ class TestBase(unittest.TestCase):
             logging.disable(logging.NOTSET)
 
     def get_sorted_metrics(self):
+        metrics_data = self.memory_metrics_reader.get_metrics_data()
         resource_metrics = (
-            self.memory_metrics_reader.get_metrics_data().resource_metrics
+            metrics_data.resource_metrics if metrics_data else []
         )
 
         all_metrics = []
@@ -180,7 +183,9 @@ class TestBase(unittest.TestCase):
         data_point: DataPointT,
         est_value_delta: Optional[float] = 0,
     ):
-        if type(expected_data_point) != type(data_point) or not isinstance(
+        if type(expected_data_point) != type(  # noqa: E721
+            data_point
+        ) or not isinstance(
             expected_data_point, (HistogramDataPoint, NumberDataPoint)
         ):
             return False
