@@ -1,3 +1,9 @@
+python-opentelemetry-test-utils (0.53b1-0+pexip25u1) pexip-trixie; urgency=medium
+
+  * New upstream release
+
+ -- Huw Jones <huw@pexip.com>  Wed, 07 May 2025 10:44:43 +0100
+
 python-opentelemetry-test-utils (0.39b0-0+pexip25u1) pexip-trixie; urgency=medium
 
   * Initial trixie build
