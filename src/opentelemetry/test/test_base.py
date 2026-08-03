@@ -1,25 +1,17 @@
 # Copyright The OpenTelemetry Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# SPDX-License-Identifier: Apache-2.0
 
 import logging
 import unittest
+from collections.abc import Sequence
 from contextlib import contextmanager
-from typing import Optional, Sequence, Tuple
 
 from opentelemetry import metrics as metrics_api
 from opentelemetry import trace as trace_api
 from opentelemetry.sdk.metrics import MeterProvider
+from opentelemetry.sdk.metrics._internal.aggregation import (
+    _DEFAULT_EXPLICIT_BUCKET_HISTOGRAM_AGGREGATION_BOUNDARIES,
+)
 from opentelemetry.sdk.metrics._internal.point import Metric
 from opentelemetry.sdk.metrics.export import (
     DataPointT,
@@ -115,7 +107,7 @@ class TestBase(unittest.TestCase):
         return tracer_provider, memory_exporter
 
     @staticmethod
-    def create_meter_provider(**kwargs) -> Tuple[MeterProvider, MetricReader]:
+    def create_meter_provider(**kwargs) -> tuple[MeterProvider, MetricReader]:
         """Helper to create a configured meter provider
         Creates a `MeterProvider` and an `InMemoryMetricReader`.
         Returns:
@@ -139,7 +131,13 @@ class TestBase(unittest.TestCase):
         finally:
             logging.disable(logging.NOTSET)
 
-    def get_sorted_metrics(self):
+    def get_sorted_metrics(self, scope: str | None = None):
+        """Returns recorded metrics sorted by name.
+
+        Args:
+            scope: Optional scope name to filter metrics by. If unset,
+                   all metrics are returned.
+        """
         metrics_data = self.memory_metrics_reader.get_metrics_data()
         resource_metrics = (
             metrics_data.resource_metrics if metrics_data else []
@@ -148,6 +146,8 @@ class TestBase(unittest.TestCase):
         all_metrics = []
         for metrics in resource_metrics:
             for scope_metrics in metrics.scope_metrics:
+                if scope is not None and scope_metrics.scope.name != scope:
+                    continue
                 all_metrics.extend(scope_metrics.metrics)
 
         return self.sorted_metrics(all_metrics)
@@ -166,7 +166,7 @@ class TestBase(unittest.TestCase):
         self,
         metric: Metric,
         expected_data_points: Sequence[DataPointT],
-        est_value_delta: Optional[float] = 0,
+        est_value_delta: float | None = 0,
     ):
         self.assertEqual(
             len(expected_data_points), len(metric.data.data_points)
@@ -181,7 +181,7 @@ class TestBase(unittest.TestCase):
     def is_data_points_equal(
         expected_data_point: DataPointT,
         data_point: DataPointT,
-        est_value_delta: Optional[float] = 0,
+        est_value_delta: float | None = 0,
     ):
         if type(expected_data_point) != type(  # noqa: E721
             data_point
@@ -204,6 +204,12 @@ class TestBase(unittest.TestCase):
             ):
                 return False
 
+            if (
+                expected_data_point.explicit_bounds
+                != data_point.explicit_bounds
+            ):
+                return False
+
         return (
             values_diff <= est_value_delta
             and expected_data_point.attributes == dict(data_point.attributes)
@@ -213,7 +219,7 @@ class TestBase(unittest.TestCase):
         self,
         expected_data_point: DataPointT,
         data_points: Sequence[DataPointT],
-        est_value_delta: Optional[float] = 0,
+        est_value_delta: float | None = 0,
     ):
         is_data_point_exist = False
         for data_point in data_points:
@@ -239,7 +245,12 @@ class TestBase(unittest.TestCase):
 
     @staticmethod
     def create_histogram_data_point(
-        sum_data_point, count, max_data_point, min_data_point, attributes
+        sum_data_point,
+        count,
+        max_data_point,
+        min_data_point,
+        attributes,
+        explicit_bounds=None,
     ):
         return HistogramDataPoint(
             count=count,
@@ -250,7 +261,9 @@ class TestBase(unittest.TestCase):
             start_time_unix_nano=0,
             time_unix_nano=0,
             bucket_counts=[],
-            explicit_bounds=[],
+            explicit_bounds=explicit_bounds
+            if explicit_bounds is not None
+            else _DEFAULT_EXPLICIT_BUCKET_HISTOGRAM_AGGREGATION_BOUNDARIES,
         )
 
 
